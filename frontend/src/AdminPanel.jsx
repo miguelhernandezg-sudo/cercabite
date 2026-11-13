@@ -161,10 +161,10 @@ function AdminPanel({ onVolver }) {
                     <button type="button" onClick={() => registrarObservaciones(r)}>
                       Observaciones
                     </button>
-                    <button type="button" onClick={() => aprobar(r)}>
+                    <button type="button" className="btn-aprobar" onClick={() => aprobar(r)}>
                       Aprobar
                     </button>
-                    <button type="button" onClick={() => rechazar(r)}>
+                    <button type="button" className="btn-rechazar" onClick={() => rechazar(r)}>
                       Rechazar
                     </button>
                   </>
