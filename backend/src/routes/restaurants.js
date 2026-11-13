@@ -1,6 +1,8 @@
 const express = require("express");
 const { findNearby, filterRestaurants } = require("../services/restaurantService");
 const { validateRestaurantInput } = require("../utils/validateRestaurantInput");
+const { validateMenuItemInput } = require("../utils/validateMenuItemInput");
+const { sanitizeRestaurant } = require("../utils/sanitizeRestaurant");
 
 function createRestaurantsRouter(repository) {
   const router = express.Router();
@@ -23,7 +25,7 @@ function createRestaurantsRouter(repository) {
       }
 
       const restaurants = await repository.findAll();
-      const resultado = findNearby(restaurants, lat, lng, radiusKm);
+      const resultado = findNearby(restaurants, lat, lng, radiusKm).map(sanitizeRestaurant);
       return res.json({ count: resultado.length, results: resultado });
     } catch (err) {
       return res.status(400).json({ error: err.message });
@@ -48,7 +50,7 @@ function createRestaurantsRouter(repository) {
         maxDistanceKm,
         lat,
         lng,
-      });
+      }).map(sanitizeRestaurant);
       return res.json({ count: resultado.length, results: resultado });
     } catch (err) {
       return res.status(400).json({ error: err.message });
@@ -74,7 +76,7 @@ function createRestaurantsRouter(repository) {
       ]);
 
       return res.json({
-        ...restaurante,
+        ...sanitizeRestaurant(restaurante),
         menu,
         reviews,
         sinResenas: reviews.length === 0,
@@ -93,7 +95,137 @@ function createRestaurantsRouter(repository) {
 
     try {
       const creado = await repository.create(req.body);
-      return res.status(201).json(creado);
+      // El ownerToken solo se entrega aquí, una única vez: es la
+      // credencial que el propietario debe guardar para poder editar
+      // después su restaurante (HU05) y su menú (HU06).
+      return res.status(201).json({
+        ...creado,
+        mensaje:
+          "Guarda tu ownerToken: lo necesitarás para editar este restaurante o su menú. No se puede recuperar después.",
+      });
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
+
+  // HU05 — Actualizar información de un restaurante propio
+  router.patch("/:id", async (req, res) => {
+    try {
+      const id = parseNumber(req.params.id);
+      if (id === undefined) {
+        return res.status(400).json({ error: "El id del restaurante no es válido" });
+      }
+
+      const ownerToken = req.header("x-owner-token");
+      if (!ownerToken) {
+        return res.status(401).json({ error: "Se requiere el encabezado x-owner-token" });
+      }
+
+      const { valid, errors } = validateRestaurantInput(req.body);
+      if (!valid) {
+        return res.status(400).json({ errors });
+      }
+
+      const resultado = await repository.update(id, ownerToken, req.body);
+      if (resultado.status === "not_found") {
+        return res.status(404).json({ error: "Restaurante no encontrado" });
+      }
+      if (resultado.status === "forbidden") {
+        return res.status(403).json({ error: "No tienes permiso para editar este restaurante" });
+      }
+
+      return res.json(sanitizeRestaurant(resultado.restaurant));
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
+
+  // HU06 — Gestionar el menú del restaurante (agregar, editar, eliminar)
+  router.post("/:id/menu", async (req, res) => {
+    try {
+      const id = parseNumber(req.params.id);
+      if (id === undefined) {
+        return res.status(400).json({ error: "El id del restaurante no es válido" });
+      }
+
+      const ownerToken = req.header("x-owner-token");
+      if (!ownerToken) {
+        return res.status(401).json({ error: "Se requiere el encabezado x-owner-token" });
+      }
+
+      const { valid, errors } = validateMenuItemInput(req.body);
+      if (!valid) {
+        return res.status(400).json({ errors });
+      }
+
+      const resultado = await repository.addMenuItem(id, ownerToken, req.body);
+      if (resultado.status === "not_found") {
+        return res.status(404).json({ error: "Restaurante no encontrado" });
+      }
+      if (resultado.status === "forbidden") {
+        return res.status(403).json({ error: "No tienes permiso para editar el menú de este restaurante" });
+      }
+
+      return res.status(201).json(resultado.item);
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
+
+  router.patch("/:id/menu/:itemId", async (req, res) => {
+    try {
+      const id = parseNumber(req.params.id);
+      const itemId = parseNumber(req.params.itemId);
+      if (id === undefined || itemId === undefined) {
+        return res.status(400).json({ error: "Id inválido" });
+      }
+
+      const ownerToken = req.header("x-owner-token");
+      if (!ownerToken) {
+        return res.status(401).json({ error: "Se requiere el encabezado x-owner-token" });
+      }
+
+      const { valid, errors } = validateMenuItemInput(req.body);
+      if (!valid) {
+        return res.status(400).json({ errors });
+      }
+
+      const resultado = await repository.updateMenuItem(id, itemId, ownerToken, req.body);
+      if (resultado.status === "not_found") {
+        return res.status(404).json({ error: "Producto de menú no encontrado" });
+      }
+      if (resultado.status === "forbidden") {
+        return res.status(403).json({ error: "No tienes permiso para editar el menú de este restaurante" });
+      }
+
+      return res.json(resultado.item);
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
+
+  router.delete("/:id/menu/:itemId", async (req, res) => {
+    try {
+      const id = parseNumber(req.params.id);
+      const itemId = parseNumber(req.params.itemId);
+      if (id === undefined || itemId === undefined) {
+        return res.status(400).json({ error: "Id inválido" });
+      }
+
+      const ownerToken = req.header("x-owner-token");
+      if (!ownerToken) {
+        return res.status(401).json({ error: "Se requiere el encabezado x-owner-token" });
+      }
+
+      const resultado = await repository.deleteMenuItem(id, itemId, ownerToken);
+      if (resultado.status === "not_found") {
+        return res.status(404).json({ error: "Producto de menú no encontrado" });
+      }
+      if (resultado.status === "forbidden") {
+        return res.status(403).json({ error: "No tienes permiso para editar el menú de este restaurante" });
+      }
+
+      return res.status(204).send();
     } catch (err) {
       return res.status(400).json({ error: err.message });
     }

@@ -14,6 +14,12 @@ CREATE TABLE IF NOT EXISTS restaurants (
     status        VARCHAR(20)       NOT NULL DEFAULT 'pending'
                   CHECK (status IN ('pending', 'published', 'rejected')),
     owner_id      INTEGER,
+    -- Token simple de propiedad (HU05/HU06): se entrega al propietario al
+    -- registrar el restaurante y se exige para editar su información o su
+    -- menú. No sustituye un sistema de autenticación completo (fuera del
+    -- alcance de este taller), pero sí hace cumplir de forma real el
+    -- criterio "el propietario solo puede editar su propio restaurante".
+    owner_token   VARCHAR(100),
     created_at    TIMESTAMPTZ       NOT NULL DEFAULT now(),
     updated_at    TIMESTAMPTZ       NOT NULL DEFAULT now()
 );

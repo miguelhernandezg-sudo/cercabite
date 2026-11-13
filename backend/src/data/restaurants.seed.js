@@ -4,6 +4,11 @@
  * el entorno universitario de Sincelejo, Sucre.
  */
 
+// Token de propiedad compartido por los restaurantes semilla, usado
+// únicamente para poder probar HU05 (actualizar información) y HU06
+// (gestionar menú) sobre estos registros de ejemplo en modo demo.
+const DEMO_OWNER_TOKEN = "demo-owner-token";
+
 const restaurants = [
   {
     id: 1,
@@ -15,6 +20,7 @@ const restaurants = [
     lng: -75.4038,
     address: "Cra 20 #25-10, cerca de la Universidad de Sucre",
     schedule: "Lun-Sáb 11:00 a 20:00",
+    ownerToken: DEMO_OWNER_TOKEN,
   },
   {
     id: 2,
@@ -26,6 +32,7 @@ const restaurants = [
     lng: -75.4001,
     address: "Calle 28 #18-45, Barrio La María",
     schedule: "Mar-Dom 12:00 a 22:00",
+    ownerToken: DEMO_OWNER_TOKEN,
   },
   {
     id: 3,
@@ -37,6 +44,7 @@ const restaurants = [
     lng: -75.3975,
     address: "Av. Principal #10-20, cerca de CECAR",
     schedule: "Lun-Dom 12:00 a 21:30",
+    ownerToken: DEMO_OWNER_TOKEN,
   },
   {
     id: 4,
@@ -48,6 +56,7 @@ const restaurants = [
     lng: -75.4055,
     address: "Cra 22 #27-05",
     schedule: "Lun-Sáb 06:00 a 15:00",
+    ownerToken: DEMO_OWNER_TOKEN,
   },
   {
     id: 5,
@@ -59,6 +68,7 @@ const restaurants = [
     lng: -75.3920,
     address: "Calle 23 #15-30",
     schedule: "Lun-Dom 16:00 a 23:00",
+    ownerToken: DEMO_OWNER_TOKEN,
   },
   {
     id: 6,
@@ -70,7 +80,8 @@ const restaurants = [
     lng: -75.4010,
     address: "Cra 19 #26-12",
     schedule: "Lun-Vie 11:00 a 19:00",
+    ownerToken: DEMO_OWNER_TOKEN,
   },
 ];
 
-module.exports = { restaurants };
+module.exports = { restaurants, DEMO_OWNER_TOKEN };
