@@ -3,6 +3,7 @@ const cors = require("cors");
 const { createPool } = require("./db/pool");
 const { createRestaurantRepository } = require("./repositories/restaurantRepository");
 const { createRestaurantsRouter } = require("./routes/restaurants");
+const { createAdminRouter } = require("./routes/admin");
 
 function createApp() {
   const app = express();
@@ -17,6 +18,7 @@ function createApp() {
   });
 
   app.use("/api/restaurants", createRestaurantsRouter(repository));
+  app.use("/api/admin", createAdminRouter(repository));
 
   return app;
 }

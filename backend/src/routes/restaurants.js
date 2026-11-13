@@ -86,6 +86,46 @@ function createRestaurantsRouter(repository) {
     }
   });
 
+  // Vista del propietario: igual al detalle público, pero visible en
+  // cualquier estado (pending/published/rejected) e incluye las
+  // observaciones del administrador (HU07) y el motivo de rechazo
+  // (HU08), para que el propietario sepa qué corregir.
+  router.get("/:id/owner-view", async (req, res) => {
+    try {
+      const id = parseNumber(req.params.id);
+      if (id === undefined) {
+        return res.status(400).json({ error: "El id del restaurante no es válido" });
+      }
+
+      const ownerToken = req.header("x-owner-token");
+      if (!ownerToken) {
+        return res.status(401).json({ error: "Se requiere el encabezado x-owner-token" });
+      }
+
+      const restaurante = await repository.findById(id);
+      if (!restaurante) {
+        return res.status(404).json({ error: "Restaurante no encontrado" });
+      }
+      if (restaurante.ownerToken !== ownerToken) {
+        return res.status(403).json({ error: "No tienes permiso para ver este restaurante" });
+      }
+
+      const [menu, reviews] = await Promise.all([
+        repository.findMenuByRestaurantId(id),
+        repository.findReviewsByRestaurantId(id),
+      ]);
+
+      return res.json({
+        ...sanitizeRestaurant(restaurante),
+        menu,
+        reviews,
+        sinResenas: reviews.length === 0,
+      });
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
+
   // HU04 — Registrar restaurante (propietario)
   router.post("/", async (req, res) => {
     const { valid, errors } = validateRestaurantInput(req.body);

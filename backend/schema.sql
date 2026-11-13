@@ -20,6 +20,11 @@ CREATE TABLE IF NOT EXISTS restaurants (
     -- alcance de este taller), pero sí hace cumplir de forma real el
     -- criterio "el propietario solo puede editar su propio restaurante".
     owner_token   VARCHAR(100),
+    -- Gestión del administrador (HU07/HU08/HU09):
+    observations       VARCHAR(500),         -- HU07: notas cuando la información está incompleta
+    rejection_reason    VARCHAR(500),         -- HU08: motivo informado al propietario al rechazar
+    flagged_for_review  BOOLEAN NOT NULL DEFAULT false, -- HU09: marcado para supervisión
+    last_reviewed_at    TIMESTAMPTZ,          -- HU09: fecha de la última supervisión
     created_at    TIMESTAMPTZ       NOT NULL DEFAULT now(),
     updated_at    TIMESTAMPTZ       NOT NULL DEFAULT now()
 );

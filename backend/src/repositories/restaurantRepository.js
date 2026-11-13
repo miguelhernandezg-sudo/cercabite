@@ -64,6 +64,10 @@ function createRestaurantRepository(pool = null) {
           schedule: data.schedule.trim(),
           status: "pending",
           ownerToken: crypto.randomUUID(),
+          observations: null,
+          rejectionReason: null,
+          flaggedForReview: false,
+          lastReviewedAt: null,
         };
         restaurants.push(nuevo);
         return nuevo;
@@ -119,6 +123,45 @@ function createRestaurantRepository(pool = null) {
         menuItems.splice(index, 1);
         return { status: "ok" };
       },
+      // HU07 — Ver restaurantes pendientes y registrar observaciones.
+      async findByStatus(status) {
+        return restaurants.filter((r) => r.status === status);
+      },
+      async setObservations(id, text) {
+        const restaurante = restaurants.find((r) => r.id === Number(id));
+        if (!restaurante) return null;
+        restaurante.observations = text;
+        return restaurante;
+      },
+      // HU08 — Aprobar o rechazar el registro de un restaurante.
+      async approve(id) {
+        const restaurante = restaurants.find((r) => r.id === Number(id));
+        if (!restaurante) return null;
+        restaurante.status = "published";
+        restaurante.rejectionReason = null;
+        return restaurante;
+      },
+      async reject(id, reason) {
+        const restaurante = restaurants.find((r) => r.id === Number(id));
+        if (!restaurante) return null;
+        restaurante.status = "rejected";
+        restaurante.rejectionReason = reason;
+        return restaurante;
+      },
+      // HU09 — Supervisar periódicamente los restaurantes publicados.
+      async flagForReview(id) {
+        const restaurante = restaurants.find((r) => r.id === Number(id));
+        if (!restaurante) return null;
+        restaurante.flaggedForReview = true;
+        return restaurante;
+      },
+      async markReviewed(id) {
+        const restaurante = restaurants.find((r) => r.id === Number(id));
+        if (!restaurante) return null;
+        restaurante.flaggedForReview = false;
+        restaurante.lastReviewedAt = new Date().toISOString();
+        return restaurante;
+      },
     };
   }
 
@@ -136,7 +179,9 @@ function createRestaurantRepository(pool = null) {
     async findById(id) {
       const { rows } = await pool.query(
         `SELECT id, name, category, price_level AS "priceLevel", rating,
-                lat, lng, address, schedule, status, owner_token AS "ownerToken"
+                lat, lng, address, schedule, status, owner_token AS "ownerToken",
+                observations, rejection_reason AS "rejectionReason",
+                flagged_for_review AS "flaggedForReview", last_reviewed_at AS "lastReviewedAt"
            FROM restaurants
           WHERE id = $1`,
         [id]
@@ -258,6 +303,74 @@ function createRestaurantRepository(pool = null) {
         [itemId, restaurantId]
       );
       return rowCount > 0 ? { status: "ok" } : { status: "not_found" };
+    },
+    // HU07 — Ver restaurantes pendientes y registrar observaciones.
+    async findByStatus(status) {
+      const { rows } = await pool.query(
+        `SELECT id, name, category, price_level AS "priceLevel", rating,
+                lat, lng, address, schedule, status, observations,
+                rejection_reason AS "rejectionReason",
+                flagged_for_review AS "flaggedForReview", last_reviewed_at AS "lastReviewedAt"
+           FROM restaurants
+          WHERE status = $1
+          ORDER BY created_at`,
+        [status]
+      );
+      return rows;
+    },
+    async setObservations(id, text) {
+      const { rows } = await pool.query(
+        `UPDATE restaurants SET observations = $1, updated_at = now()
+          WHERE id = $2
+          RETURNING id, name, category, price_level AS "priceLevel", rating, lat, lng,
+                    address, schedule, status, observations`,
+        [text, id]
+      );
+      return rows[0] || null;
+    },
+    // HU08 — Aprobar o rechazar el registro de un restaurante.
+    async approve(id) {
+      const { rows } = await pool.query(
+        `UPDATE restaurants SET status = 'published', rejection_reason = NULL, updated_at = now()
+          WHERE id = $1
+          RETURNING id, name, category, price_level AS "priceLevel", rating, lat, lng,
+                    address, schedule, status`,
+        [id]
+      );
+      return rows[0] || null;
+    },
+    async reject(id, reason) {
+      const { rows } = await pool.query(
+        `UPDATE restaurants SET status = 'rejected', rejection_reason = $1, updated_at = now()
+          WHERE id = $2
+          RETURNING id, name, category, price_level AS "priceLevel", rating, lat, lng,
+                    address, schedule, status, rejection_reason AS "rejectionReason"`,
+        [reason, id]
+      );
+      return rows[0] || null;
+    },
+    // HU09 — Supervisar periódicamente los restaurantes publicados.
+    async flagForReview(id) {
+      const { rows } = await pool.query(
+        `UPDATE restaurants SET flagged_for_review = true, updated_at = now()
+          WHERE id = $1
+          RETURNING id, name, category, price_level AS "priceLevel", rating, lat, lng,
+                    address, schedule, status, flagged_for_review AS "flaggedForReview"`,
+        [id]
+      );
+      return rows[0] || null;
+    },
+    async markReviewed(id) {
+      const { rows } = await pool.query(
+        `UPDATE restaurants
+            SET flagged_for_review = false, last_reviewed_at = now(), updated_at = now()
+          WHERE id = $1
+          RETURNING id, name, category, price_level AS "priceLevel", rating, lat, lng,
+                    address, schedule, status, flagged_for_review AS "flaggedForReview",
+                    last_reviewed_at AS "lastReviewedAt"`,
+        [id]
+      );
+      return rows[0] || null;
     },
   };
 }
