@@ -22,8 +22,8 @@ cercabite/
 | Sprint | Historias de usuario | Estado |
 | --- | --- | --- |
 | Sprint 0 | Fundamentos (backlog, arquitectura, entorno) | Completado |
-| Sprint 1 | HU01 Buscar restaurantes cercanos · HU02 Filtrar restaurantes | En desarrollo |
-| Sprint 2 | HU03 Consultar detalle · HU04 Registrar restaurante | Pendiente |
+| Sprint 1 | HU01 Buscar restaurantes cercanos · HU02 Filtrar restaurantes | Completado |
+| Sprint 2 | HU03 Consultar detalle · HU04 Registrar restaurante | Completado |
 | Sprint 3 | HU05 Actualizar información · HU06 Gestionar menú | Pendiente |
 | Sprint 4 | HU07 Validar · HU08 Aprobar/rechazar · HU09 Supervisar | Pendiente |
 
@@ -63,6 +63,8 @@ npm test
 | --- | --- | --- | --- |
 | GET | `/api/restaurants/nearby?lat=&lng=&radiusKm=` | HU01 | Restaurantes cercanos a una ubicación, ordenados por distancia |
 | GET | `/api/restaurants?category=&maxPrice=&minRating=&maxDistanceKm=&lat=&lng=` | HU02 | Restaurantes filtrados por categoría, precio, calificación o distancia |
+| GET | `/api/restaurants/:id` | HU03 | Detalle de un restaurante publicado: datos generales, menú y opiniones |
+| POST | `/api/restaurants` | HU04 | Registrar un restaurante nuevo (queda "pending" hasta ser aprobado) |
 
 ## Frontend
 
@@ -72,7 +74,7 @@ npm install
 npm run dev
 ```
 
-Interfaz mínima que solicita la ubicación del navegador (HU01), muestra el listado de restaurantes cercanos ordenado por distancia y permite aplicar filtros de categoría, precio y calificación (HU02).
+Interfaz mínima que solicita la ubicación del navegador (HU01), muestra el listado de restaurantes cercanos ordenado por distancia y permite aplicar filtros de categoría, precio y calificación (HU02). Cada tarjeta del listado abre una vista de detalle con menú y opiniones (HU03), y un enlace del encabezado permite registrar un nuevo restaurante (HU04), que queda pendiente de aprobación. El diseño visual es intencionalmente básico por ahora; se mejorará en una iteración posterior.
 
 ## Gestión de la configuración
 
