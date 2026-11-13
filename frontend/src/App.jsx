@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchRestaurants } from "./api";
+import RestaurantDetail from "./RestaurantDetail";
+import RegisterRestaurantForm from "./RegisterRestaurantForm";
 
 const CATEGORIAS = [
   { value: "", label: "Todas las categorías" },
@@ -20,6 +22,9 @@ function App() {
   const [restaurantes, setRestaurantes] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
+  // vista: "listado" | "detalle" | "registro"
+  const [vista, setVista] = useState("listado");
+  const [idSeleccionado, setIdSeleccionado] = useState(null);
 
   // HU01 — Solicitar la ubicación del estudiante al cargar la aplicación.
   useEffect(() => {
@@ -51,6 +56,34 @@ function App() {
       .finally(() => setCargando(false));
   }, [ubicacion, filtros]);
 
+  if (vista === "detalle" && idSeleccionado) {
+    return (
+      <div className="contenedor">
+        <header>
+          <h1>CercaBite</h1>
+        </header>
+        <RestaurantDetail
+          id={idSeleccionado}
+          onVolver={() => {
+            setVista("listado");
+            setIdSeleccionado(null);
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (vista === "registro") {
+    return (
+      <div className="contenedor">
+        <header>
+          <h1>CercaBite</h1>
+        </header>
+        <RegisterRestaurantForm onVolver={() => setVista("listado")} />
+      </div>
+    );
+  }
+
   return (
     <div className="contenedor">
       <header>
@@ -61,6 +94,9 @@ function App() {
             No se pudo acceder a tu ubicación; se está usando una ubicación de referencia (CECAR).
           </p>
         )}
+        <button className="enlace-registro" onClick={() => setVista("registro")}>
+          ¿Tienes un restaurante? Regístralo aquí
+        </button>
       </header>
 
       <section className="filtros">
@@ -100,13 +136,21 @@ function App() {
 
       <ul className="lista-restaurantes">
         {restaurantes.map((r) => (
-          <li key={r.id} className="tarjeta">
+          <li
+            key={r.id}
+            className="tarjeta tarjeta-clicable"
+            onClick={() => {
+              setIdSeleccionado(r.id);
+              setVista("detalle");
+            }}
+          >
             <h2>{r.name}</h2>
             <p>{r.address}</p>
             <p>
               {"$".repeat(r.priceLevel)} · ⭐ {r.rating} · {r.distanceKm} km
             </p>
             <p className="horario">{r.schedule}</p>
+            <p className="ver-detalle">Ver detalle →</p>
           </li>
         ))}
       </ul>

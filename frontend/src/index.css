@@ -38,3 +38,89 @@ header h1 { color: #d9480f; margin-bottom: 4px; }
 }
 .tarjeta h2 { margin: 0 0 4px; font-size: 1.1rem; }
 .horario { color: #666; font-size: 0.85rem; }
+.tarjeta-clicable { cursor: pointer; transition: box-shadow 0.15s ease; }
+.tarjeta-clicable:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
+.ver-detalle { color: #d9480f; font-size: 0.85rem; margin: 6px 0 0; }
+
+.enlace-registro {
+  margin-top: 10px;
+  background: none;
+  border: 1px solid #d9480f;
+  color: #d9480f;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.volver {
+  background: none;
+  border: none;
+  color: #d9480f;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.detalle h3 { margin-top: 20px; }
+.detalle ul.menu,
+.detalle ul.opiniones {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.detalle ul.menu li {
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.detalle ul.opiniones li {
+  background: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.detalle ul.opiniones p { margin: 4px 0 0; color: #444; }
+
+.formulario {
+  display: grid;
+  gap: 14px;
+  max-width: 420px;
+  margin-top: 16px;
+}
+.formulario label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: #333;
+}
+.formulario input,
+.formulario select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.formulario .coordenadas {
+  display: flex;
+  gap: 12px;
+}
+.formulario .coordenadas label { flex: 1; }
+.formulario button[type="submit"] {
+  background: #d9480f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+.formulario button[type="submit"]:disabled { opacity: 0.6; cursor: wait; }
+.aviso-exito {
+  background: #e6f4ea;
+  color: #1e7a34;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
