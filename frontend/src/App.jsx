@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchRestaurants } from "./api";
 import RestaurantDetail from "./RestaurantDetail";
 import RegisterRestaurantForm from "./RegisterRestaurantForm";
+import ManageRestaurantPanel from "./ManageRestaurantPanel";
 
 const CATEGORIAS = [
   { value: "", label: "Todas las categorías" },
@@ -22,7 +23,7 @@ function App() {
   const [restaurantes, setRestaurantes] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
-  // vista: "listado" | "detalle" | "registro"
+  // vista: "listado" | "detalle" | "registro" | "administrar"
   const [vista, setVista] = useState("listado");
   const [idSeleccionado, setIdSeleccionado] = useState(null);
 
@@ -84,6 +85,17 @@ function App() {
     );
   }
 
+  if (vista === "administrar") {
+    return (
+      <div className="contenedor">
+        <header>
+          <h1>CercaBite</h1>
+        </header>
+        <ManageRestaurantPanel onVolver={() => setVista("listado")} />
+      </div>
+    );
+  }
+
   return (
     <div className="contenedor">
       <header>
@@ -94,9 +106,14 @@ function App() {
             No se pudo acceder a tu ubicación; se está usando una ubicación de referencia (CECAR).
           </p>
         )}
-        <button className="enlace-registro" onClick={() => setVista("registro")}>
-          ¿Tienes un restaurante? Regístralo aquí
-        </button>
+        <div className="enlaces-propietario">
+          <button className="enlace-registro" onClick={() => setVista("registro")}>
+            ¿Tienes un restaurante? Regístralo aquí
+          </button>
+          <button className="enlace-registro" onClick={() => setVista("administrar")}>
+            Administrar mi restaurante
+          </button>
+        </div>
       </header>
 
       <section className="filtros">

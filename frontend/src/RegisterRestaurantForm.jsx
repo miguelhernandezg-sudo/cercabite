@@ -62,9 +62,16 @@ function RegisterRestaurantForm({ onVolver }) {
       </p>
 
       {exito && (
-        <p className="aviso-exito">
-          "{exito.name}" quedó registrado y pendiente de aprobación (id #{exito.id}).
-        </p>
+        <div className="aviso-exito">
+          <p>
+            "{exito.name}" quedó registrado y pendiente de aprobación (id #{exito.id}).
+          </p>
+          <p>
+            Guarda este código de propietario, lo vas a necesitar para editar tu restaurante o
+            su menú más adelante (no se puede recuperar después):
+          </p>
+          <code className="owner-token">{exito.ownerToken}</code>
+        </div>
       )}
       {error && <p className="error">{error}</p>}
 

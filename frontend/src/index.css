@@ -124,3 +124,51 @@ header h1 { color: #d9480f; margin-bottom: 4px; }
   padding: 10px 14px;
   border-radius: 8px;
 }
+
+.enlaces-propietario {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.owner-token {
+  display: block;
+  background: #222;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 6px;
+  word-break: break-all;
+  font-size: 0.85rem;
+}
+
+.formulario-acceso {
+  max-width: 420px;
+  margin-bottom: 20px;
+}
+
+.formulario-inline {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  max-width: none;
+}
+.formulario-inline label { flex: 1; min-width: 140px; }
+
+.menu-editable li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.acciones-menu { display: flex; gap: 8px; }
+.acciones-menu button {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
