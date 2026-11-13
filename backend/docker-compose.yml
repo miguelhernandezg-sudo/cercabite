@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cercabite-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cercabite
+      POSTGRES_PASSWORD: cercabite
+      POSTGRES_DB: cercabite
+    ports:
+      - "5432:5432"
+    volumes:
+      - cercabite_db_data:/var/lib/postgresql/data
+
+volumes:
+  cercabite_db_data:
