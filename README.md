@@ -24,7 +24,7 @@ cercabite/
 | Sprint 0 | Fundamentos (backlog, arquitectura, entorno) | Completado |
 | Sprint 1 | HU01 Buscar restaurantes cercanos · HU02 Filtrar restaurantes | Completado |
 | Sprint 2 | HU03 Consultar detalle · HU04 Registrar restaurante | Completado |
-| Sprint 3 | HU05 Actualizar información · HU06 Gestionar menú | Pendiente |
+| Sprint 3 | HU05 Actualizar información · HU06 Gestionar menú | Completado |
 | Sprint 4 | HU07 Validar · HU08 Aprobar/rechazar · HU09 Supervisar | Pendiente |
 
 ## Backend
@@ -65,6 +65,12 @@ npm test
 | GET | `/api/restaurants?category=&maxPrice=&minRating=&maxDistanceKm=&lat=&lng=` | HU02 | Restaurantes filtrados por categoría, precio, calificación o distancia |
 | GET | `/api/restaurants/:id` | HU03 | Detalle de un restaurante publicado: datos generales, menú y opiniones |
 | POST | `/api/restaurants` | HU04 | Registrar un restaurante nuevo (queda "pending" hasta ser aprobado) |
+| PATCH | `/api/restaurants/:id` | HU05 | Actualizar la información de un restaurante propio (requiere `x-owner-token`) |
+| POST | `/api/restaurants/:id/menu` | HU06 | Agregar un producto al menú (requiere `x-owner-token`) |
+| PATCH | `/api/restaurants/:id/menu/:itemId` | HU06 | Editar un producto del menú (requiere `x-owner-token`) |
+| DELETE | `/api/restaurants/:id/menu/:itemId` | HU06 | Eliminar un producto del menú (requiere `x-owner-token`) |
+
+**Nota sobre `x-owner-token`:** al registrar un restaurante (HU04) la API entrega un `ownerToken` único; ese valor debe enviarse en el encabezado `x-owner-token` para editar el restaurante o su menú (HU05, HU06). No hay un sistema de autenticación completo todavía —está fuera del alcance de este taller—, pero el control de propiedad es real: sin el token correcto la API responde 401/403. Los restaurantes semilla usan el token de ejemplo `demo-owner-token` para poder probar estas historias.
 
 ## Frontend
 
@@ -74,7 +80,7 @@ npm install
 npm run dev
 ```
 
-Interfaz mínima que solicita la ubicación del navegador (HU01), muestra el listado de restaurantes cercanos ordenado por distancia y permite aplicar filtros de categoría, precio y calificación (HU02). Cada tarjeta del listado abre una vista de detalle con menú y opiniones (HU03), y un enlace del encabezado permite registrar un nuevo restaurante (HU04), que queda pendiente de aprobación. El diseño visual es intencionalmente básico por ahora; se mejorará en una iteración posterior.
+Interfaz mínima que solicita la ubicación del navegador (HU01), muestra el listado de restaurantes cercanos ordenado por distancia y permite aplicar filtros de categoría, precio y calificación (HU02). Cada tarjeta del listado abre una vista de detalle con menú y opiniones (HU03), y un enlace del encabezado permite registrar un nuevo restaurante (HU04), que queda pendiente de aprobación. Un segundo enlace abre el panel "Administrar mi restaurante", donde el propietario —identificado con el id de su restaurante y su `ownerToken`— puede actualizar la información general (HU05) y agregar, editar o eliminar productos del menú (HU06). El diseño visual es intencionalmente básico por ahora; se mejorará en una iteración posterior.
 
 ## Gestión de la configuración
 
