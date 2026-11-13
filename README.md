@@ -25,7 +25,7 @@ cercabite/
 | Sprint 1 | HU01 Buscar restaurantes cercanos · HU02 Filtrar restaurantes | Completado |
 | Sprint 2 | HU03 Consultar detalle · HU04 Registrar restaurante | Completado |
 | Sprint 3 | HU05 Actualizar información · HU06 Gestionar menú | Completado |
-| Sprint 4 | HU07 Validar · HU08 Aprobar/rechazar · HU09 Supervisar | Pendiente |
+| Sprint 4 | HU07 Validar · HU08 Aprobar/rechazar · HU09 Supervisar | Completado |
 
 ## Backend
 
@@ -70,7 +70,17 @@ npm test
 | PATCH | `/api/restaurants/:id/menu/:itemId` | HU06 | Editar un producto del menú (requiere `x-owner-token`) |
 | DELETE | `/api/restaurants/:id/menu/:itemId` | HU06 | Eliminar un producto del menú (requiere `x-owner-token`) |
 
-**Nota sobre `x-owner-token`:** al registrar un restaurante (HU04) la API entrega un `ownerToken` único; ese valor debe enviarse en el encabezado `x-owner-token` para editar el restaurante o su menú (HU05, HU06). No hay un sistema de autenticación completo todavía —está fuera del alcance de este taller—, pero el control de propiedad es real: sin el token correcto la API responde 401/403. Los restaurantes semilla usan el token de ejemplo `demo-owner-token` para poder probar estas historias.
+| GET | `/api/restaurants/:id/owner-view` | — | Vista del propietario: su restaurante en cualquier estado, con observaciones y motivo de rechazo (requiere `x-owner-token`) |
+| GET | `/api/admin/restaurants?status=pending\|published\|rejected` | HU07/HU09 | Lista restaurantes por estado (requiere `x-admin-token`) |
+| PATCH | `/api/admin/restaurants/:id/observations` | HU07 | Registrar observaciones cuando la información está incompleta |
+| POST | `/api/admin/restaurants/:id/approve` | HU08 | Aprobar: el restaurante pasa a "published" |
+| POST | `/api/admin/restaurants/:id/reject` | HU08 | Rechazar con un motivo, visible para el propietario en su `owner-view` |
+| POST | `/api/admin/restaurants/:id/flag` | HU09 | Marcar un restaurante publicado para revisión |
+| POST | `/api/admin/restaurants/:id/reviewed` | HU09 | Registrar la fecha de la última supervisión |
+
+**Nota sobre `x-owner-token`:** al registrar un restaurante (HU04) la API entrega un `ownerToken` único; ese valor debe enviarse en el encabezado `x-owner-token` para editar el restaurante o su menú (HU05, HU06) o para consultar su estado (`owner-view`). No hay un sistema de autenticación completo todavía —está fuera del alcance de este taller—, pero el control de propiedad es real: sin el token correcto la API responde 401/403. Los restaurantes semilla usan el token de ejemplo `demo-owner-token` para poder probar estas historias.
+
+**Nota sobre `x-admin-token`:** las rutas de administración (HU07, HU08, HU09) exigen este encabezado, comparado contra la variable de entorno `ADMIN_TOKEN` (en modo demo, el valor de ejemplo es `demo-admin-token`). Al igual que con `ownerToken`, es un control de acceso real pero simplificado, sin un sistema de autenticación completo.
 
 ## Frontend
 
@@ -80,7 +90,9 @@ npm install
 npm run dev
 ```
 
-Interfaz mínima que solicita la ubicación del navegador (HU01), muestra el listado de restaurantes cercanos ordenado por distancia y permite aplicar filtros de categoría, precio y calificación (HU02). Cada tarjeta del listado abre una vista de detalle con menú y opiniones (HU03), y un enlace del encabezado permite registrar un nuevo restaurante (HU04), que queda pendiente de aprobación. Un segundo enlace abre el panel "Administrar mi restaurante", donde el propietario —identificado con el id de su restaurante y su `ownerToken`— puede actualizar la información general (HU05) y agregar, editar o eliminar productos del menú (HU06). El diseño visual es intencionalmente básico por ahora; se mejorará en una iteración posterior.
+Interfaz mínima que solicita la ubicación del navegador (HU01), muestra el listado de restaurantes cercanos ordenado por distancia y permite aplicar filtros de categoría, precio y calificación (HU02). Cada tarjeta del listado abre una vista de detalle con menú y opiniones (HU03), y un enlace del encabezado permite registrar un nuevo restaurante (HU04), que queda pendiente de aprobación. Un segundo enlace abre el panel "Administrar mi restaurante", donde el propietario —identificado con el id de su restaurante y su `ownerToken`— puede actualizar la información general (HU05), agregar/editar/eliminar productos del menú (HU06), y ver el estado de su restaurante junto con observaciones o motivo de rechazo (HU07, HU08). Un tercer enlace abre el "Panel de administrador" (con `x-admin-token`), donde se listan los restaurantes pendientes para aprobarlos o rechazarlos con un motivo (HU07, HU08), y los publicados para marcarlos para revisión o registrar su última supervisión (HU09). El diseño visual es intencionalmente básico por ahora; se mejorará en una iteración posterior.
+
+Con el Sprint 4 queda completo el backlog HU01-HU09 definido en el primer avance del proyecto.
 
 ## Gestión de la configuración
 
