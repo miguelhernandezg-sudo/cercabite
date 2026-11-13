@@ -1,11 +1,17 @@
 import { useState } from "react";
 import {
-  fetchRestaurantDetail,
+  fetchOwnerView,
   updateRestaurant,
   addMenuItem,
   updateMenuItem,
   deleteMenuItem,
 } from "./api";
+
+const ETIQUETAS_ESTADO = {
+  pending: "Pendiente de aprobación",
+  published: "Publicado",
+  rejected: "Rechazado",
+};
 
 const CATEGORIAS = [
   { value: "comida_corriente", label: "Comida corriente" },
@@ -39,7 +45,7 @@ function ManageRestaurantPanel({ onVolver }) {
     setError(null);
     setMensaje(null);
     try {
-      const detalle = await fetchRestaurantDetail(restaurantId);
+      const detalle = await fetchOwnerView(restaurantId, ownerToken);
       setRestaurante(detalle);
       setFormulario({
         name: detalle.name,
@@ -139,6 +145,25 @@ function ManageRestaurantPanel({ onVolver }) {
 
       {restaurante && formulario && (
         <>
+          <p className={`estado-restaurante estado-${restaurante.status}`}>
+            Estado: {ETIQUETAS_ESTADO[restaurante.status] || restaurante.status}
+          </p>
+          {restaurante.status === "rejected" && restaurante.rejectionReason && (
+            <p className="aviso-rechazo">
+              Tu restaurante fue rechazado. Motivo: {restaurante.rejectionReason}
+            </p>
+          )}
+          {restaurante.observations && (
+            <p className="aviso-observaciones">
+              Observaciones del administrador: {restaurante.observations}
+            </p>
+          )}
+          {restaurante.flaggedForReview && (
+            <p className="aviso-observaciones">
+              Este restaurante fue marcado para revisión por el administrador.
+            </p>
+          )}
+
           <h3>Información del restaurante</h3>
           <form onSubmit={guardarInformacion} className="formulario">
             <label>

@@ -103,3 +103,75 @@ export async function deleteMenuItem(restaurantId, itemId, ownerToken) {
     throw new Error(body.error || "No se pudo eliminar el producto");
   }
 }
+
+/**
+ * Vista del propietario: igual al detalle (HU03) pero visible en
+ * cualquier estado (pending/published/rejected), e incluye las
+ * observaciones del administrador (HU07) y el motivo de rechazo (HU08).
+ */
+export async function fetchOwnerView(id, ownerToken) {
+  const response = await fetch(`${BASE_URL}/${id}/owner-view`, {
+    headers: { "x-owner-token": ownerToken },
+  });
+  return manejarRespuesta(response, "No se pudo consultar el restaurante");
+}
+
+const ADMIN_BASE_URL = "/api/admin/restaurants";
+
+/**
+ * HU07 — Lista restaurantes por estado (pendientes para validar,
+ * publicados para supervisar — HU09).
+ */
+export async function fetchAdminRestaurants(status, adminToken) {
+  const response = await fetch(`${ADMIN_BASE_URL}?status=${status}`, {
+    headers: { "x-admin-token": adminToken },
+  });
+  return manejarRespuesta(response, "No se pudo consultar los restaurantes");
+}
+
+/** HU07 — Registrar observaciones cuando la información está incompleta. */
+export async function setRestaurantObservations(id, adminToken, observations) {
+  const response = await fetch(`${ADMIN_BASE_URL}/${id}/observations`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "x-admin-token": adminToken },
+    body: JSON.stringify({ observations }),
+  });
+  return manejarRespuesta(response, "No se pudieron guardar las observaciones");
+}
+
+/** HU08 — Aprobar: el restaurante pasa a "published". */
+export async function approveRestaurant(id, adminToken) {
+  const response = await fetch(`${ADMIN_BASE_URL}/${id}/approve`, {
+    method: "POST",
+    headers: { "x-admin-token": adminToken },
+  });
+  return manejarRespuesta(response, "No se pudo aprobar el restaurante");
+}
+
+/** HU08 — Rechazar: se informa el motivo al propietario. */
+export async function rejectRestaurant(id, adminToken, reason) {
+  const response = await fetch(`${ADMIN_BASE_URL}/${id}/reject`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-admin-token": adminToken },
+    body: JSON.stringify({ reason }),
+  });
+  return manejarRespuesta(response, "No se pudo rechazar el restaurante");
+}
+
+/** HU09 — Marcar un restaurante publicado para revisión. */
+export async function flagRestaurantForReview(id, adminToken) {
+  const response = await fetch(`${ADMIN_BASE_URL}/${id}/flag`, {
+    method: "POST",
+    headers: { "x-admin-token": adminToken },
+  });
+  return manejarRespuesta(response, "No se pudo marcar el restaurante para revisión");
+}
+
+/** HU09 — Registrar que la supervisión periódica ya se realizó. */
+export async function markRestaurantReviewed(id, adminToken) {
+  const response = await fetch(`${ADMIN_BASE_URL}/${id}/reviewed`, {
+    method: "POST",
+    headers: { "x-admin-token": adminToken },
+  });
+  return manejarRespuesta(response, "No se pudo registrar la supervisión");
+}

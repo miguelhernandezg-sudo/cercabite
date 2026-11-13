@@ -172,3 +172,69 @@ header h1 { color: #d9480f; margin-bottom: 4px; }
   cursor: pointer;
   font-size: 0.85rem;
 }
+
+.enlace-admin { border-color: #666; color: #444; }
+
+.estado-restaurante {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.estado-pending { background: #fff4e0; color: #a15c00; }
+.estado-published { background: #e6f4ea; color: #1e7a34; }
+.estado-rejected { background: #fdecea; color: #c0392b; }
+
+.aviso-rechazo {
+  background: #fdecea;
+  color: #c0392b;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.aviso-observaciones {
+  background: #fff4e0;
+  color: #a15c00;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.tabs-admin { display: flex; gap: 8px; }
+.tabs-admin button {
+  flex: 1;
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+}
+.tabs-admin button.activo {
+  background: #d9480f;
+  color: white;
+  border-color: #d9480f;
+}
+
+.lista-admin {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.id-restaurante { color: #999; font-size: 0.85rem; font-weight: normal; }
+.acciones-admin {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.acciones-admin button {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}

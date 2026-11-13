@@ -3,6 +3,7 @@ import { fetchRestaurants } from "./api";
 import RestaurantDetail from "./RestaurantDetail";
 import RegisterRestaurantForm from "./RegisterRestaurantForm";
 import ManageRestaurantPanel from "./ManageRestaurantPanel";
+import AdminPanel from "./AdminPanel";
 
 const CATEGORIAS = [
   { value: "", label: "Todas las categorías" },
@@ -23,7 +24,7 @@ function App() {
   const [restaurantes, setRestaurantes] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
-  // vista: "listado" | "detalle" | "registro" | "administrar"
+  // vista: "listado" | "detalle" | "registro" | "administrar" | "admin"
   const [vista, setVista] = useState("listado");
   const [idSeleccionado, setIdSeleccionado] = useState(null);
 
@@ -96,6 +97,17 @@ function App() {
     );
   }
 
+  if (vista === "admin") {
+    return (
+      <div className="contenedor">
+        <header>
+          <h1>CercaBite</h1>
+        </header>
+        <AdminPanel onVolver={() => setVista("listado")} />
+      </div>
+    );
+  }
+
   return (
     <div className="contenedor">
       <header>
@@ -112,6 +124,9 @@ function App() {
           </button>
           <button className="enlace-registro" onClick={() => setVista("administrar")}>
             Administrar mi restaurante
+          </button>
+          <button className="enlace-registro enlace-admin" onClick={() => setVista("admin")}>
+            Panel de administrador
           </button>
         </div>
       </header>
