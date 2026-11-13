@@ -1,0 +1,21 @@
+{
+  "name": "cercabite-backend",
+  "version": "0.1.0",
+  "description": "API REST de CercaBite (búsqueda y filtrado de restaurantes cercanos)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
