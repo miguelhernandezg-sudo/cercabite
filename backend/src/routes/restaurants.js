@@ -1,5 +1,6 @@
 const express = require("express");
 const { findNearby, filterRestaurants } = require("../services/restaurantService");
+const { validateRestaurantInput } = require("../utils/validateRestaurantInput");
 
 function createRestaurantsRouter(repository) {
   const router = express.Router();
@@ -49,6 +50,50 @@ function createRestaurantsRouter(repository) {
         lng,
       });
       return res.json({ count: resultado.length, results: resultado });
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
+
+  // HU03 — Consultar el detalle de un restaurante (menú y opiniones)
+  router.get("/:id", async (req, res) => {
+    try {
+      const id = parseNumber(req.params.id);
+      if (id === undefined) {
+        return res.status(400).json({ error: "El id del restaurante no es válido" });
+      }
+
+      const restaurante = await repository.findById(id);
+      if (!restaurante || restaurante.status === "pending" || restaurante.status === "rejected") {
+        return res.status(404).json({ error: "Restaurante no encontrado" });
+      }
+
+      const [menu, reviews] = await Promise.all([
+        repository.findMenuByRestaurantId(id),
+        repository.findReviewsByRestaurantId(id),
+      ]);
+
+      return res.json({
+        ...restaurante,
+        menu,
+        reviews,
+        sinResenas: reviews.length === 0,
+      });
+    } catch (err) {
+      return res.status(400).json({ error: err.message });
+    }
+  });
+
+  // HU04 — Registrar restaurante (propietario)
+  router.post("/", async (req, res) => {
+    const { valid, errors } = validateRestaurantInput(req.body);
+    if (!valid) {
+      return res.status(400).json({ errors });
+    }
+
+    try {
+      const creado = await repository.create(req.body);
+      return res.status(201).json(creado);
     } catch (err) {
       return res.status(400).json({ error: err.message });
     }

@@ -29,6 +29,18 @@ CREATE TABLE IF NOT EXISTS menu_items (
     created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- HU03 — Opiniones y calificaciones de estudiantes sobre un restaurante.
+CREATE TABLE IF NOT EXISTS reviews (
+    id             SERIAL PRIMARY KEY,
+    restaurant_id  INTEGER REFERENCES restaurants (id) ON DELETE CASCADE,
+    author         VARCHAR(100) NOT NULL,
+    rating         SMALLINT     NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment        VARCHAR(500),
+    created_at     TIMESTAMPTZ  NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_reviews_restaurant ON reviews (restaurant_id);
+
 CREATE TABLE IF NOT EXISTS users (
     id           SERIAL PRIMARY KEY,
     name         VARCHAR(150) NOT NULL,
