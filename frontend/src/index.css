@@ -1,0 +1,40 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f7f7f5;
+  color: #222;
+}
+.contenedor {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+header h1 { color: #d9480f; margin-bottom: 4px; }
+.aviso { color: #a15c00; font-size: 0.9rem; }
+.error { color: #c0392b; }
+.filtros {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0 24px;
+}
+.filtros select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.lista-restaurantes {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.tarjeta {
+  background: white;
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.tarjeta h2 { margin: 0 0 4px; font-size: 1.1rem; }
+.horario { color: #666; font-size: 0.85rem; }
